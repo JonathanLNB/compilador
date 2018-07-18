@@ -1,0 +1,18 @@
+vacio main(vacio)
+{
+integer ba=>5+6-8;
+
+}
+
+
+integer sumar(integer a, integer b)
+{
+integer suma=>a+b;
+
+for(integer suma=>20; suma>1; suma--)
+[
+if(suma==5)[
+a=>b;
+]
+]
+}

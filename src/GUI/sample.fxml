@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller">
+   <center>
+      <TextArea fx:id="aCodigo" prefHeight="284.0" prefWidth="487.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <font>
+            <Font name="Century Gothic" size="12.0" />
+         </font></TextArea>
+   </center>
+   <bottom>
+      <VBox prefHeight="175.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <FlowPane prefHeight="34.0" prefWidth="600.0">
+               <children>
+                  <Button fx:id="bCompilar" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="35.0" prefWidth="206.0" text="Compilar" textAlignment="CENTER" wrapText="true">
+                     <font>
+                        <Font name="Century Gothic" size="18.0" />
+                     </font>
+                     <FlowPane.margin>
+                        <Insets left="230.0" />
+                     </FlowPane.margin>
+                  </Button>
+               </children>
+            </FlowPane>
+            <TextArea fx:id="aConsola" prefHeight="62.0" prefWidth="600.0">
+               <font>
+                  <Font name="Century Gothic" size="12.0" />
+               </font></TextArea>
+            <Label text="Integrantes:">
+               <font>
+                  <Font name="Century Gothic" size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="609.0" text="Crespo Castillo Joskua" textAlignment="CENTER">
+               <font>
+                  <Font name="Century Gothic" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="30.0" />
+               </VBox.margin>
+            </Label>
+            <Label alignment="CENTER" prefHeight="17.0" prefWidth="603.0" text="Gonzalez Ana Elisa" textAlignment="CENTER">
+               <font>
+                  <Font name="Century Gothic" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="30.0" />
+               </VBox.margin>
+            </Label>
+            <Label alignment="CENTER" prefHeight="18.0" prefWidth="620.0" text="Nieto Bustamante Jonathan Leonardo">
+               <font>
+                  <Font name="Century Gothic" size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="30.0" />
+               </VBox.margin>
+            </Label>
+         </children>
+      </VBox>
+   </bottom>
+   <right>
+      <TableView fx:id="tTokens" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <columns>
+            <TableColumn fx:id="cToken" prefWidth="101.0" text="Tokens" />
+            <TableColumn fx:id="cId" prefWidth="98.0" text="Identificador" />
+         </columns>
+      </TableView>
+   </right>
+   <top>
+      <Label text="CS  🐭 🧀" textFill="#74755c" BorderPane.alignment="CENTER">
+         <font>
+            <Font name="Century Gothic" size="24.0" />
+         </font>
+      </Label>
+   </top>
+</BorderPane>
