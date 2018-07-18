@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 public class Principal {
     private Acceso ac;
     private ObservableList<String> tokens, ids;
-    private int q, q0, x, y, id=500, error = 0;
+    private int q, q0, x, y, id = 500, error = 0;
     private int finales[];
     private int matriz[][];
     private String alfabeto[];
@@ -63,40 +63,51 @@ public class Principal {
     }
 
     public void evaluar() {
+        String palabra = "";
         int index;
-        entrada = texto.split(" ");
+        entrada = texto.split("\n");
         for (int i = 0; i < entrada.length; i++) {
             q = q0;
             texto = entrada[i];
-            for (int j = 0; j < texto.length(); j++) {
-                if(esFinal())
-                    break;
-                else {
-                    index = encontrarIndex(""+texto.charAt(j));
-                    if (index != -1)
-                        q = matriz[q][index];
-                    else {
-                        error++;
-                        break;
+            for (int j = 0; j <= texto.length(); j++) {
+                if (esFinal()) {
+                    palabra = palabra.replace(" ", "");
+                    if(q == 300)
+                        palabra = palabra.replace(";", "");
+                    tokens.add(palabra);
+                    if (q == 147) {
+                        ids.add("" + id);
+                        id++;
+                    } else
+                        ids.add("" + q);
+                    q = q0;
+                    palabra = "";
+                    j--;
+                } else {
+                    if(j<texto.length()) {
+                        palabra += texto.charAt(j);
+                        index = encontrarIndex("" + texto.charAt(j));
+                        if (index != -1)
+                            q = matriz[q][index];
+                        else {
+                            error++;
+                            break;
+                        }
                     }
                 }
             }
-            tokens.add(texto);
-            if(q == 147) {
-                ids.add("" + id);
-                id++;
-            }
-            else
-                ids.add(""+q);
         }
     }
-    public int getErrores(){
+
+    public int getErrores() {
         return error;
     }
-    public ObservableList<String> getTokens(){
+
+    public ObservableList<String> getTokens() {
         return tokens;
     }
-    public ObservableList<String> getIds(){
+
+    public ObservableList<String> getIds() {
         return ids;
     }
 }
