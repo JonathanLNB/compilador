@@ -48,9 +48,9 @@ public class Controller implements Initializable {
                 tTokens.getColumns().setAll(cToken, cId);
                 pPrincipal.setRight(tTokens);
                 if(p.getCantErrores()==0)
-                    aConsola.setText("El codigo no tiene errores Lexicos");
+                    aConsola.setText("El código no tiene errores léxicos");
                 else {
-                    aConsola.setText("");
+                    aConsola.setText("Tienes un total de "+p.getCantErrores()+" de errores\n");
                     errores = p.getErrores();
                     for(int i = 0; i<errores.size(); i++)
                         aConsola.appendText(errores.get(i));

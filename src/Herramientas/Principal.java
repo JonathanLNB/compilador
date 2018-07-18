@@ -61,7 +61,7 @@ public class Principal {
 
     public int encontrarIndex(String aux) {
         for (int i = 0; i < alfabeto.length; i++)
-            if (alfabeto[i].equals(aux))
+            if (alfabeto[i].equalsIgnoreCase(aux))
                 return i;
         return -1;
     }
@@ -70,38 +70,65 @@ public class Principal {
         Tokens token;
         String palabra = "";
         int index;
+        boolean usar = false;
+        Boolean aux;
         entrada = texto.split("\n");
         for (int i = 0; i < entrada.length; i++) {
             q = q0;
             texto = entrada[i];
             for (int j = 0; j <= texto.length(); j++) {
-                if (esFinal()) {
-                    token = new Tokens();
-                    palabra = palabra.replace(" ", "");
-                    if(q == 300)
-                        palabra = palabra.replace(";", "");
-                    token.setToken(palabra);
-                    if (q == 147) {
-                        token.setId("" + id);
-                        id++;
-                    } else
-                        token.setId("" + q);
-                    tokens.add(token);
-                    q = q0;
-                    palabra = "";
-                    j--;
-                } else {
-                    if(j<texto.length()) {
-                        palabra += texto.charAt(j);
-                        index = encontrarIndex("" + texto.charAt(j));
-                        if (index != -1)
-                            q = matriz[q][index];
-                        else {
-                            errores.add("Error en la linea: "+i);
-                            error++;
-                            break;
+                aux = esFinal();
+                if (aux != null) {
+                    if (aux) {
+                        usar = true;
+                        token = new Tokens();
+                        //palabra = palabra.replace(" ", "");
+                        if (q == 300) {
+                            palabra = palabra.replace(";", "");
+                            token.setToken(palabra.toLowerCase());
+                            token.setId("" + q);
+                            tokens.add(token);
+                            token = new Tokens();
+                            q = 124;
+                            palabra = ";";
+                        }
+                        token.setToken(palabra);
+                        if (q == 147) {
+                            for (int a = 0; a < tokens.size(); a++) {
+                                if (tokens.get(a).getToken().equalsIgnoreCase(palabra)) {
+                                    token.setId(tokens.get(a).getId());
+                                    usar = false;
+                                }
+                            }
+                            if (usar) {
+                                token.setId("" + id);
+                                id++;
+                            }
+                        } else
+                            token.setId("" + q);
+                        tokens.add(token);
+                        q = q0;
+                        palabra = "";
+                        j--;
+                    } else {
+                        if (j < texto.length()) {
+                            palabra += texto.charAt(j);
+                            index = encontrarIndex("" + texto.charAt(j));
+                            if (index != -1)
+                                q = matriz[q][index];
+                            else {
+                                errores.add("Error en la linea: " + (i + 1) + "\n");
+                                error++;
+                                palabra = "";
+                                break;
+                            }
                         }
                     }
+                }
+                else {
+                    errores.add("Error en la linea: " + (i + 1) + "\n");
+                    error++;
+                    palabra = "";
                 }
             }
         }
