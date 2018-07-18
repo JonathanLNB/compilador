@@ -1,11 +1,15 @@
 package Herramientas;
 
+import TDA.Tokens;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
+
 public class Principal {
     private Acceso ac;
-    private ObservableList<String> tokens, ids;
+    private ObservableList<Tokens> tokens;
+    private ArrayList<String> errores;
     private int q, q0, x, y, id = 500, error = 0;
     private int finales[];
     private int matriz[][];
@@ -23,7 +27,7 @@ public class Principal {
         String aux;
         String auxA[];
         tokens = FXCollections.observableArrayList();
-        ids = FXCollections.observableArrayList();
+        errores = new ArrayList<String>();
         ac = new Acceso("Reglas.txt");
         alfabeto = ac.getLinea(0).split("@");
         q0 = Integer.parseInt(ac.getLinea(1));
@@ -63,6 +67,7 @@ public class Principal {
     }
 
     public void evaluar() {
+        Tokens token;
         String palabra = "";
         int index;
         entrada = texto.split("\n");
@@ -71,15 +76,17 @@ public class Principal {
             texto = entrada[i];
             for (int j = 0; j <= texto.length(); j++) {
                 if (esFinal()) {
+                    token = new Tokens();
                     palabra = palabra.replace(" ", "");
                     if(q == 300)
                         palabra = palabra.replace(";", "");
-                    tokens.add(palabra);
+                    token.setToken(palabra);
                     if (q == 147) {
-                        ids.add("" + id);
+                        token.setId("" + id);
                         id++;
                     } else
-                        ids.add("" + q);
+                        token.setId("" + q);
+                    tokens.add(token);
                     q = q0;
                     palabra = "";
                     j--;
@@ -90,6 +97,7 @@ public class Principal {
                         if (index != -1)
                             q = matriz[q][index];
                         else {
+                            errores.add("Error en la linea: "+i);
                             error++;
                             break;
                         }
@@ -99,15 +107,13 @@ public class Principal {
         }
     }
 
-    public int getErrores() {
+    public int getCantErrores() {
         return error;
     }
-
-    public ObservableList<String> getTokens() {
-        return tokens;
+    public ArrayList<String> getErrores(){
+        return errores;
     }
-
-    public ObservableList<String> getIds() {
-        return ids;
+    public ObservableList<Tokens> getTokens() {
+        return tokens;
     }
 }
