@@ -31,7 +31,7 @@ public class Principal {
         ac = new Acceso("Reglas.txt");
         alfabeto = ac.getLinea(0).split("@");
         q0 = Integer.parseInt(ac.getLinea(1));
-        auxA = ac.getLinea(3).split(" ");
+        auxA = ac.getLinea(3).split(",");
         finales = new int[auxA.length];
         for (int i = 0; i < auxA.length; i++)
             finales[i] = Integer.parseInt(auxA[i]);
@@ -51,7 +51,7 @@ public class Principal {
         Boolean salir = false;
         for (int fin : finales) {
             if (fin == q)
-                if (fin == 148)
+                if (fin == 198)
                     salir = null;
                 else
                     salir = true;
@@ -83,7 +83,7 @@ public class Principal {
                         usar = true;
                         token = new Tokens();
                         //palabra = palabra.replace(" ", "");
-                        if (q == 300) {
+                        if (q == 180) {
                             palabra = palabra.replace(";", "");
                             token.setToken(palabra.toLowerCase());
                             token.setId("" + q);
@@ -92,8 +92,16 @@ public class Principal {
                             q = 124;
                             palabra = ";";
                         }
-                        token.setToken(palabra);
-                        if (q == 147) {
+                        if (q == 199) {
+                            if (palabra.replace(" ", "").charAt(palabra.replace(" ", "").length()-1) == ';') {
+                                palabra = palabra.replace(";", "");
+                                token.setToken("" +palabra);
+                                token.setId("" + q);
+                                tokens.add(token);
+                                token = new Tokens();
+                                q = 124;
+                                palabra = ";";
+                            }
                             for (int a = 0; a < tokens.size(); a++) {
                                 if (tokens.get(a).getToken().equalsIgnoreCase(palabra)) {
                                     token.setId(tokens.get(a).getId());
@@ -104,19 +112,21 @@ public class Principal {
                                 token.setId("" + id);
                                 id++;
                             }
+
                         } else
                             token.setId("" + q);
+                        token.setToken(palabra);
                         tokens.add(token);
                         q = q0;
                         palabra = "";
                         j--;
                     } else {
                         if (j < texto.length()) {
-                            palabra += texto.charAt(j);
                             index = encontrarIndex("" + texto.charAt(j));
-                            if (index != -1)
+                            if (index != -1) {
+                                palabra += texto.charAt(j);
                                 q = matriz[q][index];
-                            else {
+                            } else {
                                 errores.add("Error en la linea: " + (i + 1) + "\n");
                                 error++;
                                 palabra = "";
@@ -124,11 +134,11 @@ public class Principal {
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     errores.add("Error en la linea: " + (i + 1) + "\n");
                     error++;
                     palabra = "";
+                    break;
                 }
             }
         }
@@ -137,9 +147,11 @@ public class Principal {
     public int getCantErrores() {
         return error;
     }
-    public ArrayList<String> getErrores(){
+
+    public ArrayList<String> getErrores() {
         return errores;
     }
+
     public ObservableList<Tokens> getTokens() {
         return tokens;
     }
