@@ -47,10 +47,24 @@ public class Controller implements Initializable {
                 cId.setCellValueFactory(new PropertyValueFactory<Tokens, String>("id"));
                 tTokens.getColumns().setAll(cToken, cId);
                 pPrincipal.setRight(tTokens);
-                if(p.getCantErrores()==0)
-                    aConsola.setText("El código no tiene errores léxicos");
+                if(p.getCantErrores()==0) {
+                    aConsola.setText("El código no tiene errores léxicos\n");
+                    aConsola.appendText("-----------------------------------\n");
+                    if(p.getCantErroresS() == 0)
+                        aConsola.appendText("El código no tiene errores sintacticos");
+                    else {
+                        errores = p.getErrores();
+                        aConsola.setText("Tienes un total de " + p.getCantErroresS() + " de errores sintacticos\n");
+                        for(int i = 0; i<errores.size(); i++)
+                            aConsola.appendText(errores.get(i));
+                    }
+                }
                 else {
-                    aConsola.setText("Tienes un total de "+p.getCantErrores()+" de errores\n");
+                    aConsola.setText("Tienes un total de "+p.getCantErrores()+" de errores léxicos\n");
+                    if(p.getCantErroresS() == 0)
+                        aConsola.appendText("El código no tiene errores sintacticos");
+                    else
+                        aConsola.setText("Tienes un total de " + p.getCantErroresS() + " de errores sintacticos\n");
                     errores = p.getErrores();
                     for(int i = 0; i<errores.size(); i++)
                         aConsola.appendText(errores.get(i));

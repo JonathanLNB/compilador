@@ -10,7 +10,7 @@ public class Principal {
     private Acceso ac;
     private ObservableList<Tokens> tokens;
     private ArrayList<String> errores;
-    private int q, q0, x, y, id = 500, error = 0;
+    private int q, q0, x, y, id = 500, error = 0, errorS = 0;
     private int finales[];
     private int[] valores = new int[]{180, 181, 182};
     private int[] tiposDato = new int[]{150, 151, 154, 155};
@@ -19,12 +19,12 @@ public class Principal {
     private int[] comparativos = new int[]{143, 144, 145, 146, 177, 178};
     private int[] aritmeticos = new int[]{135, 136, 169, 170, 171, 172, 173};
     private int[] igualacion = new int[]{175, 137, 138};
-    private int[] logicos = new int[]{147, 178};
+    private int[] logicos = new int[]{147, 148};
     private int matriz[][];
     private String alfabeto[];
     private String entrada[];
     private String salida = "", texto = "";
-    private int cont;
+    private int cont, linea = 0;
     private boolean bloque = false, si = false;
 
     public Principal(String texto) {
@@ -144,7 +144,7 @@ public class Principal {
                                 palabra += texto.charAt(j);
                                 q = matriz[q][index];
                             } else {
-                                errores.add("Error en la linea: " + (i + 1) + "\n");
+                                errores.add("Error léxico en la linea: " + (i + 1) + "\n");
                                 error++;
                                 palabra = "";
                                 break;
@@ -152,7 +152,7 @@ public class Principal {
                         }
                     }
                 } else {
-                    errores.add("Error en la linea: " + (i + 1) + "\n");
+                    errores.add("Error léxico en la linea: " + (i + 1) + "\n");
                     error++;
                     palabra = "";
                     break;
@@ -162,6 +162,7 @@ public class Principal {
     }
 
     public void analisisSintactico() {
+        linea++;
         if (buscarEncapsulamiento(tokens.get(cont).getId())) {
             bloque = true;
             bloque();
@@ -170,38 +171,61 @@ public class Principal {
             declaracion();
         }
         if (tokens.get(cont).getId() == 164) {
-            declaracion();
+            si = true;
+            si();
+        }
+        if(tokens.get(cont).getId() == 163){
+            mandarSalida();
         }
         if (tokens.get(cont).getId() >= 500) {
             operacion();
         }
     }
     public void analisisDelBloque() {
+        linea++;
         if (buscarTipoDato(tokens.get(cont).getId())) {
             declaracion();
         }
         if (tokens.get(cont).getId() == 164) {
-            declaracion();
+            si = true;
+            si();
+        }
+        if(tokens.get(cont).getId() == 163){
+            mandarSalida();
         }
         if (tokens.get(cont).getId() >= 500) {
             operacion();
         }
         if(tokens.get(cont).getId() == 128){
             bloque = false;
+            analisisSintactico();
         }
     }
     public void analisisDelSi() {
+        linea++;
         if (buscarTipoDato(tokens.get(cont).getId())) {
             declaracion();
         }
-        if (tokens.get(cont).getId() == 164) {
-            declaracion();
+        if(tokens.get(cont).getId() == 163){
+            mandarSalida();
         }
         if (tokens.get(cont).getId() >= 500) {
             operacion();
         }
         if(tokens.get(cont).getId() == 128){
-            bloque = false;
+            si = false;
+            if(incrementar()) {
+                if (bloque)
+                    analisisDelBloque();
+                else
+                    analisisSintactico();
+            }
+            else{
+                errorS++;
+                errores.add("Error: Linea "+linea+ " llave faltante\n");
+                return;
+            }
+
         }
     }
 
@@ -268,54 +292,11 @@ public class Principal {
                     if (tokens.get(cont).getId() == 175) {
                         if (incrementar()) {
                             if (buscarEntradas(tokens.get(cont).getId())) {
-                                if (incrementar()) {
-                                    if (tokens.get(cont).getId() == 131) {
-                                        declaracion();
-                                    }
-                                    if (tokens.get(cont).getId() == 134){
-                                        if(incrementar()) {
-                                            if (bloque) {
-                                                if (si)
-                                                    analisisDelSi();
-                                                else
-                                                    analisisDelBloque();
-                                            }
-                                            else{
-                                                if(si)
-                                                    analisisDelSi();
-                                                else
-                                                    analisisSintactico();
-                                            }
-                                        }
-                                    }
-                                    return;
-
-                                }
+                                if (consultarFin()) return;
                             } else {
                                 for (int a = 0; a < tokens.size(); a++) {
                                     if (tokens.get(a).getId() == tokens.get(cont).getId()) {
-                                        if (incrementar()) {
-                                            if (tokens.get(cont).getId() == 131) {
-                                                declaracion();
-                                            }
-                                            if (tokens.get(cont).getId() == 134){
-                                                if(incrementar()) {
-                                                    if (bloque) {
-                                                        if (si)
-                                                            analisisDelSi();
-                                                        else
-                                                            analisisDelBloque();
-                                                    }
-                                                    else {
-                                                        if (si)
-                                                            analisisDelSi();
-                                                        else
-                                                            analisisSintactico();
-                                                    }
-                                                }
-                                            }
-                                            return;
-                                        }
+                                        if (consultarFin()) return;
                                     }
                                 }
                             }
@@ -327,20 +308,65 @@ public class Principal {
                         if (tokens.get(cont).getId() == 134 || tokens.get(cont).getId() == 128) {
                             if (incrementar()) {
                                 if (bloque)
-                                    analisisDelBloque();
+                                    if(si)
+                                        analisisDelSi();
+                                    else
+                                        analisisDelBloque();
                                 else
-                                    analisisSintactico();
+                                    if(si)
+                                        analisisDelSi();
+                                    else
+                                        analisisSintactico();
                             }
                             return;
                         }
                         else{
-                            System.out.println("Error");
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " esperando delimitador\n");
+                            return;
                         }
                     }
                 }
-
+                else {
+                    errorS++;
+                    errores.add("Error: Linea "+linea+ " falta de punto y coma o signo igual\n");
+                }
+            }
+            else{
+                errorS++;
+                errores.add("Error: Linea "+linea+ " esperando algun identificador\n");
             }
         }
+        else{
+            errorS++;
+            errores.add("Error: Linea "+linea+ " falta de identificador\n");
+        }
+    }
+
+    private boolean consultarFin() {
+        if (incrementar()) {
+            if (tokens.get(cont).getId() == 131) {
+                declaracion();
+            }
+            if (tokens.get(cont).getId() == 134){
+                if(incrementar()) {
+                    if (bloque) {
+                        if (si)
+                            analisisDelSi();
+                        else
+                            analisisDelBloque();
+                    }
+                    else {
+                        if (si)
+                            analisisDelSi();
+                        else
+                            analisisSintactico();
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public void bloque() {
@@ -355,11 +381,13 @@ public class Principal {
                                         if (buscarTipoDato(tokens.get(cont).getId())){
                                             if(incrementar()){
                                                 if (tokens.get(cont).getId()<500) {
-                                                    System.out.println("Error");
+                                                    errorS++;
+                                                    errores.add("Error: Linea "+linea+ " esperando identificador\n");
                                                     return;
                                                 }
                                                 if (!incrementar()){
-                                                    System.out.println("Error");
+                                                    errorS++;
+                                                    errores.add("Error: Linea "+linea+ " código incompleto\n");
                                                     return;
                                                 }
                                             }
@@ -374,17 +402,20 @@ public class Principal {
                                             }
                                         }
                                         else{
-                                            System.out.println("Error");
+                                            errorS++;
+                                            errores.add("Error: Linea "+linea+ " llave faltante\n");
                                             return;
                                         }
                                     }
                                     else{
-                                        System.out.println("Error");
+                                        errorS++;
+                                        errores.add("Error: Linea "+linea+ " código incompleto\n");
                                         return;
                                     }
                                 }
                                 else{
-                                    System.out.println("Error");
+                                    errorS++;
+                                    errores.add("Error: Linea "+linea+ " parentesis faltante\n");
                                     return;
                                 }
                             }
@@ -407,23 +438,27 @@ public class Principal {
                                         if(tokens.get(cont).getId() == 134)
                                             return;
                                         else {
-                                            System.out.println("Error");
+                                            errorS++;
+                                            errores.add("Error: Linea "+linea+ " punto y coma faltante\n");
                                             return;
                                         }
                                     }
                                 }
                                 else{
-                                    System.out.println("Error");
+                                    errorS++;
+                                    errores.add("Error: Linea "+linea+ " código incompleto\n");
                                     return;
                                 }
                             }
                             else {
-                                System.out.println("Error");
+                                errorS++;
+                                errores.add("Error: Linea "+linea+ " esperando identificador o valor a comparar\n");
                                 return;
                             }
                         }
                         else {
-                            System.out.println("Error");
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " código completo\n");
                             return;
                         }
                     }while (tokens.get(cont).getId() != 134);
@@ -431,7 +466,8 @@ public class Principal {
                 if(tokens.get(cont).getId() == 137 || tokens.get(cont).getId() == 138){
                     if(incrementar()){
                         if(!(tokens.get(cont).getId() >= 500 || buscarEntradas(tokens.get(cont).getId()))){
-                            System.out.println("Error");
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " esperando identificador o valor\n");
                             return;
                         }
                     }
@@ -440,8 +476,156 @@ public class Principal {
         }
     }
 
-    public void si() {
+    public void mandarSalida(){
+        if(incrementar()){
+            if(tokens.get(cont).getId() == 125){
+                if (incrementar()){
+                    if(tokens.get(cont).getId() == 181 || tokens.get(cont).getId() == 182){
+                        if(incrementar()){
+                            if(tokens.get(cont).getId() == 130){
+                                if(incrementar()){
+                                    if(tokens.get(cont).getId() != 134){
+                                        errorS++;
+                                        errores.add("Error: Linea "+linea+ " esperando punto y coma\n");
+                                        return;
+                                    }
+                                }
+                                else {
+                                    errorS++;
+                                    errores.add("Error: Linea "+linea+ " código incompleto\n");
+                                    return;
+                                }
+                            }
+                            else{
+                                errorS++;
+                                errores.add("Error: Linea "+linea+ " parentesis faltante\n");
+                                return;
+                            }
+                        }
+                        else {
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " código incompleto\n");
+                            return;
+                        }
+                    }
+                    else {
+                        errorS++;
+                        errores.add("Error: Linea "+linea+ " texto faltante\n");
+                        return;
+                    }
+                }
+                else {
+                    errorS++;
+                    errores.add("Error: Linea "+linea+ " código incompleto\n");
+                    return;
+                }
+            }
+            else{
+                errorS++;
+                errores.add("Error: Linea "+linea+ " parentesis faltante\n");
+                return;
+            }
+        }
+        else {
+            errorS++;
+            errores.add("Error: Linea "+linea+ " código incompleto\n");
+            return;
+        }
+    }
 
+    public void si() {
+        if(incrementar()){
+            if(tokens.get(cont).getId() == 125){
+                do {
+                    if (incrementar()) {
+                        if (buscarEntradas(tokens.get(cont).getId()) || tokens.get(cont).getId()>=500){
+                            if(incrementar()){
+                                if(buscarComparativo(tokens.get(cont).getId())){
+                                    if(incrementar()){
+                                        if(buscarEntradas(tokens.get(cont).getId()) || tokens.get(cont).getId()>=500){
+                                            if(!incrementar()){
+                                                errorS++;
+                                                errores.add("Error: Linea "+linea+ " código incompleto\n");
+                                                return;
+                                            }
+                                        }
+                                        else {
+                                            errorS++;
+                                            errores.add("Error: Linea "+linea+ " esperando identificador o valor a comparar\n");
+                                            return;
+                                        }
+                                    }
+                                    else {
+                                        errorS++;
+                                        errores.add("Error: Linea "+linea+ " código incompleto\n");
+                                        return;
+                                    }
+                                }
+                                else {
+                                    errorS++;
+                                    errores.add("Error: Linea "+linea+ " esperando operador comparativo\n");
+                                    return;
+                                }
+                            }
+                            else {
+                                errorS++;
+                                errores.add("Error: Linea "+linea+ " código incompleto\n");
+                                return;
+                            }
+                        }
+                        else {
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " esperando identificaro o valor a comparar\n");
+                            return;
+                        }
+                    }
+                    else {
+                        errorS++;
+                        errores.add("Error: Linea "+linea+ " código incompleto\n");
+                        return;
+                    }
+                }while (buscarLogicos(tokens.get(cont).getId()));
+                if(tokens.get(cont).getId() == 130){
+                    if(incrementar()){
+                        if(tokens.get(cont).getId() == 127) {
+                            if(incrementar())
+                                analisisDelSi();
+                            else
+                            {
+                                errorS++;
+                                errores.add("Error: Linea "+linea+ " código incompleto\n");
+                                return;
+                            }
+                        }
+                        else {
+                            errorS++;
+                            errores.add("Error: Linea "+linea+ " llave faltante\n");
+                            return;
+                        }
+                    }
+                    else {
+                        errorS++;
+                        errores.add("Error: Linea "+linea+ " código incompleto\n");
+                        return;
+                    }
+                }
+                else {
+                    errorS++;
+                    errores.add("Error: Linea "+linea+ " parentesis faltante\n");
+                    return;
+                }
+            }
+            else {
+                errorS++;
+                errores.add("Error: Linea "+linea+ " parentesis faltante\n");
+                return;
+            }
+        }
+        else {
+            errorS++;
+            errores.add("Error: Linea "+linea+ " código faltante\n");
+            return;
+        }
     }
 
     public boolean incrementar() {
@@ -454,6 +638,9 @@ public class Principal {
 
     public int getCantErrores() {
         return error;
+    }
+    public int getCantErroresS() {
+        return errorS;
     }
 
     public ArrayList<String> getErrores() {
