@@ -1,9 +1,10 @@
 package TDA;
 
 public class Tokens {
-    private String token, id;
+    private String token;
+    private int id;
 
-    public Tokens(String token, String id) {
+    public Tokens(String token, int id) {
         this.token = token;
         this.id = id;
     }
@@ -15,7 +16,7 @@ public class Tokens {
         this.token = token;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -23,7 +24,7 @@ public class Tokens {
         return token;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 }
